@@ -1,0 +1,210 @@
+{
+    "voices": {
+        "Australia": {
+            "Male": {
+                "William": "en-AU-WilliamNeural"
+            },
+            "Female": {
+                "Natasha": "en-AU-NatashaNeural"
+            }
+        },
+        "Canada": {
+            "Male": {
+                "Liam": "en-CA-LiamNeural"
+            },
+            "Female": {
+                "Clara": "en-CA-ClaraNeural"
+            }
+        },
+        "United Kingdom": {
+            "Male": {
+                "Alfie": "en-GB-AlfieNeural",
+                "Elliot": "en-GB-ElliotNeural",
+                "Ethan": "en-GB-EthanNeural",
+                "Noah": "en-GB-NoahNeural",
+                "Oliver": "en-GB-OliverNeural",
+                "Ryan": "en-GB-RyanNeural",
+                "Thomas": "en-GB-ThomasNeural"
+            },
+            "Female": {
+                "Libby": "en-GB-LibbyNeural",
+                "Abbi": "en-GB-AbbiNeural",
+                "Bella": "en-GB-BellaNeural",
+                "Hollie": "en-GB-HollieNeural",
+                "Maisie": "en-GB-MaisieNeural",
+                "Olivia": "en-GB-OliviaNeural",
+                "Sonia": "en-GB-SoniaNeural",
+                "Mia": "en-GB-MiaNeural"
+            }
+        },
+        "Hongkong": {
+            "Male": {
+                "Sam": "en-HK-SamNeural"
+            },
+            "Female": {
+                "Yan": "en-HK-YanNeural"
+            }
+        },
+        "Ireland": {
+            "Male": {
+                "Connor": "en-IE-ConnorNeural"
+            },
+            "Female": {
+                "Emily": "en-IE-EmilyNeural"
+            }
+        },
+        "India": {
+            "Male": {
+                "Prabhat": "en-IN-PrabhatNeural"
+            },
+            "Female": {
+                "Neerja": "en-IN-NeerjaNeural"
+            }
+        },
+        "Kenya": {
+            "Male": {
+                "Chilemba": "en-KE-ChilembaNeural"
+            },
+            "Female": {
+                "Asilia": "en-KE-AsiliaNeural"
+            }
+        },
+        "Nigeria": {
+            "Male": {
+                "Abeo": "en-NG-AbeoNeural"
+            },
+            "Female": {
+                "Ezinne": "en-NG-EzinneNeural"
+            }
+        },
+        "New Zealand": {
+            "Male": {
+                "Mitchell": "en-NZ-MitchellNeural"
+            },
+            "Female": {
+                "Molly": "en-NZ-MollyNeural"
+            }
+        },
+        "Philippines": {
+            "Male": {
+                "James": "en-PH-JamesNeural"
+            },
+            "Female": {
+                "Rosa": "en-PH-RosaNeural"
+            }
+        },
+        "Singapore": {
+            "Male": {
+                "Wayne": "en-SG-WayneNeural"
+            },
+            "Female": {
+                "Luna": "en-SG-LunaNeural"
+            }
+        },
+        "Tanzania": {
+            "Male": {
+                "Elimu": "en-TZ-ElimuNeural"
+            },
+            "Female": {
+                "Imani": "en-TZ-ImaniNeural"
+            }
+        },
+        "United States": {
+            "Male": {
+                "Guy (styles)": "en-US-GuyNeural",
+                "Brandon": "en-US-BrandonNeural",
+                "Christopher": "en-US-ChristopherNeural",
+                "Eric": "en-US-EricNeural",
+                "Jacob": "en-US-JacobNeural"
+            },
+            "Female": {
+                "Jenny (styles)": "en-US-JennyNeural",
+                "Sara (styles)": "en-US-SaraNeural",
+                "Aria (styles)": "en-US-AriaNeural",
+                "Jenny Multilingual": "en-US-JennyMultilingualNeural",
+                "Amber": "en-US-AmberNeural",
+                "Ana": "en-US-AnaNeural",
+                "Ashley": "en-US-AshleyNeural",
+                "Cora": "en-US-CoraNeural",
+                "Elizabeth": "en-US-ElizabethNeural",
+                "Michelle": "en-US-MichelleNeural",
+                "Monica": "en-US-MonicaNeural"
+            }
+        },
+        "South Africa": {
+            "Male": {
+                "Luke": "en-ZA-LukeNeural"
+            },
+            "Female": {
+                "Leah": "en-ZA-LeahNeural"
+            }
+        }
+    },
+    "styles": {
+        "en-US-JennyNeural": [
+            "assistant",
+            "chat",
+            "customerservice",
+            "newscast",
+            "angry",
+            "cheerful",
+            "sad",
+            "excited",
+            "friendly",
+            "terrified",
+            "shouting",
+            "unfriendly",
+            "whispering",
+            "hopeful"
+        ],
+        "en-US-GuyNeural": [
+            "newscast",
+            "angry",
+            "cheerful",
+            "sad",
+            "excited",
+            "friendly",
+            "terrified",
+            "shouting",
+            "unfriendly",
+            "whispering",
+            "hopeful"
+        ],
+        "en-US-AriaNeural": [
+            "chat",
+            "customerservice",
+            "narration-professional",
+            "newscast-casual",
+            "newscast-formal",
+            "cheerful",
+            "empathetic",
+            "angry",
+            "sad",
+            "excited",
+            "friendly",
+            "terrified",
+            "shouting",
+            "unfriendly",
+            "whispering",
+            "hopeful"
+        ],
+        "en-US-SaraNeural": [
+            "angry",
+            "cheerful",
+            "excited",
+            "friendly",
+            "hopeful",
+            "sad",
+            "shouting",
+            "terrified",
+            "unfriendly",
+            "whispering"
+        ]
+    },
+    "config": {
+        "accent": "United States",
+        "gender": "Male",
+        "voice": "Christopher",
+        "style": "Default"
+    }
+}
