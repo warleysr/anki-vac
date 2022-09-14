@@ -1,11 +1,18 @@
 import PySimpleGUI as Sg
+from playsound import playsound
 import json
 import requests
 import os
-from playsound import playsound
+import threading
+import uuid
+
 
 
 class TTSConfig:
+
+    window = None
+    test_text = "\u25b6 Test voice"
+
     @classmethod
     def start_window(cls):
 
@@ -18,7 +25,6 @@ class TTSConfig:
 
         Sg.theme("Reddit")
 
-        test_text = "\u25b6 Test voice"
         font = "Arial 10 bold"
         fsize = (30, 10)
 
@@ -57,13 +63,14 @@ class TTSConfig:
             ],
             [
                 Sg.Push(),
-                Sg.Button(test_text, button_color="green", key="test"),
+                Sg.Button(cls.test_text, button_color="green", key="test"),
                 Sg.Button("Save TTS config", key="save"),
                 Sg.Push(),
             ],
         ]
 
         window = Sg.Window("Anki-VAC - TTS Config", layout, finalize=True)
+        cls.window = window
 
         # First window update: load saved config
         cls.__update_window(window, voices, styles, config, True)
@@ -85,31 +92,14 @@ class TTSConfig:
                 cls.__update_window(window, voices, styles, values, False)
 
             elif event == "test":
-                with open("api-keys.json", "r") as fp:
-                    keys = json.load(fp)
 
                 voice_code = voices[values["accent"]][values["gender"]][values["voice"]]
-
-                url = (
-                    "https://brazilsouth.tts.speech.microsoft.com/cognitiveservices/v1"
+                
+                thread = threading.Thread(
+                    target=cls.gen_tts_audio, 
+                    args=(voice_code, "Hello, do you like my voice?", values["style"], True)
                 )
-                req = requests.post(
-                    url,
-                    headers={
-                        "Content-Type": "application/ssml+xml",
-                        "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
-                        "Ocp-Apim-Subscription-Key": keys["Azure"]["key"],
-                    },
-                    data="<speak version='1.0' xml:lang='en-US'>"
-                    + f"<voice name='{voice_code}' style='{values['style']}'>"
-                    + "Hello, do you like my voice?</voice></speak>",
-                )
-                with open("test.mp3", "wb") as fp:
-                    fp.write(bytearray(req.content))
-
-                playsound("test.mp3")
-
-                os.remove("test.mp3")
+                thread.start()
 
             elif event == "save":
                 voices_data["config"]["accent"] = values["accent"]
@@ -139,6 +129,41 @@ class TTSConfig:
             )
         else:
             window["style"].update(disabled=True, value="Default")
+
+    @classmethod
+    def gen_tts_audio(cls, voice_code, text, style="default", play=False):
+        if play:
+            cls.window["test"].update(text="Playing...", disabled=True)
+
+        with open("api_keys.json", "r") as fp:
+            keys = json.load(fp)
+
+        url = (
+            "https://brazilsouth.tts.speech.microsoft.com/cognitiveservices/v1"
+        )
+        req = requests.post(
+            url,
+            headers={
+                "Content-Type": "application/ssml+xml",
+                "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
+                "Ocp-Apim-Subscription-Key": keys["Azure"]["key"],
+            },
+            data="<speak version='1.0' xml:lang='en-US'>"
+            + f"<voice name='{voice_code}' style='{style}'>"
+            + f"{text}</voice></speak>",
+        )
+
+        name = "tts/" + str(uuid.uuid4()) + ".mp3"
+        with open(name, "wb") as fp:
+            fp.write(bytearray(req.content))
+
+        if play:
+            playsound(name)
+            cls.window["test"].update(text=cls.test_text, disabled=False)
+
+        # os.remove(f"{name}.mp3")
+
+        return name
 
 
 if __name__ == "__main__":
