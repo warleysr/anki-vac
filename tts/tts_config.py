@@ -7,7 +7,6 @@ import threading
 import uuid
 
 
-
 class TTSConfig:
 
     window = None
@@ -94,10 +93,15 @@ class TTSConfig:
             elif event == "test":
 
                 voice_code = voices[values["accent"]][values["gender"]][values["voice"]]
-                
+
                 thread = threading.Thread(
-                    target=cls.gen_tts_audio, 
-                    args=(voice_code, "Hello, do you like my voice?", values["style"], True)
+                    target=cls.gen_tts_audio,
+                    args=(
+                        voice_code,
+                        "Hello, do you like my voice?",
+                        values["style"],
+                        True,
+                    ),
                 )
                 thread.start()
 
@@ -138,9 +142,7 @@ class TTSConfig:
         with open("api_keys.json", "r") as fp:
             keys = json.load(fp)
 
-        url = (
-            "https://brazilsouth.tts.speech.microsoft.com/cognitiveservices/v1"
-        )
+        url = "https://brazilsouth.tts.speech.microsoft.com/cognitiveservices/v1"
         req = requests.post(
             url,
             headers={

@@ -1,0 +1,12 @@
+{
+    "urls": {
+        "ANKI_CONNECT": "http://localhost:8765",
+        "OXFORD_API": "https://od-api.oxforddictionaries.com:443/api/v2/entries/en-us/",
+        "BRITANNICA_API": "https://dictionaryapi.com/api/v3/references/learners/json/",
+        "GOOGLE_API": "https://customsearch.googleapis.com/customsearch/v1"
+    },
+    "options": {
+        "deck": "CIMV",
+        "model": "Básico"
+    }
+}

@@ -1,64 +1,71 @@
+import PySimpleGUI as Sg
 import json
-import requests
+import time
 
-OXFORD_API = "https://od-api.oxforddictionaries.com:443/api/v2/entries/en-gb/"
-BRITANNICA_API = "https://dictionaryapi.com/api/v3/references/learners/json/"
-GOOGLE_API = "https://customsearch.googleapis.com/customsearch/v1"
-ANKI_CONNECT = "http://localhost:8765"
 
 if __name__ == "__main__":
-    params = {
-        "action": "addNote",
-        "version": 6,
-        "params": {
-            "note": {
-                "deckName": "CIMV",
-                "modelName": "Básico",
-                "fields": {
-                    "Frente": "Frente de um card de teste.",
-                    "Verso": "<b>Back</b> de um card de teste",
-                },
-            }
-        },
-    }
-    req = requests.get(ANKI_CONNECT, json=params)
+    with open("config.json", "r", encoding="utf-8") as fp:
+        config = json.load(fp)
 
-    print(req.json())
+    Sg.theme("Reddit")
 
-    """
-    with open("api-keys.json", "r") as fp:
-        data = json.load(fp)
+    ffont = "Arial 12 bold"
 
-    word = "horse"
-    req = requests.get(
-        GOOGLE_API,
-        params={
-            "cx": data["Google"]["cx"],
-            "key": data["Google"]["key"],
-            "searchType": "image",
-            "imgSize": "MEDIUM",
-            "q": word,
-            "num": 5,
-        },
-    )
+    layout = [
+        [
+            Sg.Push(),
+            Sg.Text("Anki-VAC", font="Arial 20 bold", text_color="green"),
+            Sg.Push(),
+        ],
+        [
+            Sg.Text("Deck: ", font=ffont),
+            Sg.Text(config["options"]["deck"], font=ffont, text_color="red"),
+        ],
+        [
+            Sg.Text("Model: ", font=ffont),
+            Sg.Text(config["options"]["model"], font=ffont, text_color="red"),
+        ],
+        [Sg.Text("Words to add: ", font=ffont)],
+        [Sg.Multiline(size=(60, 15), key="words")],
+        [
+            Sg.Push(),
+            Sg.Button("Add to my vocabulary", font=ffont, key="add"),
+            Sg.Push(),
+        ],
+        [
+            Sg.StatusBar(
+                "Waiting input words",
+                key="status",
+                size=(2, 1),
+            ),
+            Sg.ProgressBar(0, key="progress", size=(20, 20)),
+        ],
+        [Sg.Push()],
+    ]
 
-    data = req.json()
-    with open(f"{word}.json", "w") as fp:
-        json.dump(data, fp, indent=4)
+    window = Sg.Window("Anki-VAC", layout)
 
-    for item in data["items"]:
-        print(f" {item['title']} ".center(100, "="))
-        print(item["link"])
-        print()
+    while True:
+        event, values = window.read()
 
-    word = "shrimp"
-    req = requests.get(BRITANNICA_API + word, params={"key": data["Britannica"]["key"]})
+        if event == Sg.WIN_CLOSED:
+            break
+        elif event == "add":
+            window["words"].update(disabled=True)
+            window["add"].update(disabled=True)
 
-    req = requests.get(
-        OXFORD_API + "/" + word,
-        headers={"app-id": data["app-id"], "app-key": data["app-key"]},
-    )
+            nwords = len(values["words"].split("\n"))
+            count = 1
 
-    with open(f"{word}.json", "w") as fp:
-        json.dump(req.json(), fp, indent=4)
-    """
+            while count <= nwords:
+                window["status"].update(value=f"Processing words... ({count}/{nwords})")
+                window["progress"].update(current_count=count, max=nwords)
+                time.sleep(1)
+                count += 1
+
+            window["status"].update(value="Finished")
+            window["words"].update(value="")
+            window["words"].update(disabled=False)
+            window["add"].update(disabled=False)
+
+            Sg.PopupOK(f"{nwords} new flashcards were added to Anki!", title="Anki-VAC")
