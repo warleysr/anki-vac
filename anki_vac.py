@@ -1,4 +1,6 @@
 import PySimpleGUI as Sg
+from tts.tts_config import TTSConfig
+from card_options import CardOptions
 import json
 import time
 
@@ -11,7 +13,10 @@ if __name__ == "__main__":
 
     ffont = "Arial 12 bold"
 
+    menu_opt = [["Options", ["Card options", "TTS config", "API keys"]]]
+
     layout = [
+        [Sg.Menubar(menu_opt)],
         [
             Sg.Push(),
             Sg.Text("Anki-VAC", font="Arial 20 bold", text_color="green"),
@@ -69,3 +74,8 @@ if __name__ == "__main__":
             window["add"].update(disabled=False)
 
             Sg.PopupOK(f"{nwords} new flashcards were added to Anki!", title="Anki-VAC")
+
+        elif event == "TTS config":
+            TTSConfig.start_window()
+        elif event == "Card options":
+            CardOptions.start_window()

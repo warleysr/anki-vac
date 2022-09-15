@@ -114,6 +114,8 @@ class TTSConfig:
                 with open("tts/english_voices.json", "w") as fp:
                     json.dump(voices_data, fp, indent=4)
 
+                window.close()
+                window = None
                 break
 
     @classmethod
@@ -163,10 +165,4 @@ class TTSConfig:
             playsound(name)
             cls.window["test"].update(text=cls.test_text, disabled=False)
 
-        # os.remove(f"{name}.mp3")
-
         return name
-
-
-if __name__ == "__main__":
-    TTSConfig.start_window()
