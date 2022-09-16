@@ -2,12 +2,13 @@ import PySimpleGUI as Sg
 from playsound import playsound
 import json
 import requests
-import os
 import threading
 import uuid
 
 
 class TTSConfig:
+
+    TTS_API = None
 
     window = None
     test_text = "\u25b6 Test voice"
@@ -144,13 +145,12 @@ class TTSConfig:
         with open("api_keys.json", "r") as fp:
             keys = json.load(fp)
 
-        url = "https://brazilsouth.tts.speech.microsoft.com/cognitiveservices/v1"
         req = requests.post(
-            url,
+            cls.TTS_API,
             headers={
                 "Content-Type": "application/ssml+xml",
                 "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
-                "Ocp-Apim-Subscription-Key": keys["Azure"]["key"],
+                "Ocp-Apim-Subscription-Key": keys["Azure"]["tts"],
             },
             data="<speak version='1.0' xml:lang='en-US'>"
             + f"<voice name='{voice_code}' style='{style}'>"

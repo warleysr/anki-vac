@@ -1,10 +1,13 @@
 import requests
 import json
 
+# import anki_vac as av
+import traceback
+
 
 class AnkiConnect:
 
-    ANKI_CONNECT = "http://localhost:8765"
+    ANKI_CONNECT = None
 
     @classmethod
     def get_decks(cls):
@@ -27,6 +30,9 @@ class AnkiConnect:
 
     @classmethod
     def __api_request(cls, opt):
-        res = requests.get(cls.ANKI_CONNECT, data=json.dumps(opt)).json()
-        return None if res["error"] is not None else res["result"]
-
+        try:
+            res = requests.get(cls.ANKI_CONNECT, data=json.dumps(opt)).json()
+            return None if res["error"] is not None else res["result"]
+        except Exception as e:
+            pass
+            # av.Logger.log(traceback.format_exc(), av.Logger.LogType.ERROR)
