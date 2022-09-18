@@ -1,14 +1,12 @@
 {
     "apis-urls": {
         "ANKI_CONNECT": "http://localhost:8765",
-        "OXFORD_API": "https://od-api.oxforddictionaries.com:443/api/v2/entries/en-us/",
-        "BRITANNICA_API": "https://dictionaryapi.com/api/v3/references/learners/json/",
         "BING_API": "https://api.bing.microsoft.com/v7.0/images/search",
         "TTS_API": "https://brazilsouth.tts.speech.microsoft.com/cognitiveservices/v1"
     },
-    "options": {
-        "deck": "CIMV",
-        "model": "B\u00e1sico"
+    "apis-keys": {
+        "TTS": "<YOUR AZURE TTS SERVICE KEY>",
+        "BING": "<YOUR AZURE BING SERVICE KEY>"
     },
     "deck": "CIMV",
     "model": "B\u00e1sico",

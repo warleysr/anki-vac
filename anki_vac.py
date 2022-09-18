@@ -1,10 +1,13 @@
 from anki_connect import AnkiConnect
-from data_apis import *
+from bing_api import *
 from interface import GraphicInterface
 from tts.tts_config import TTSConfig
 import time
 from enum import Enum
 import json
+
+BING_KEY = None
+TTS_KEY = None
 
 
 class Logger:
@@ -36,17 +39,18 @@ class Logger:
 
 
 if __name__ == "__main__":
+    # Load config file
     with open("config.json", "r", encoding="utf-8") as fp:
         config = json.load(fp)
 
-    API.start()
-
-    # Define APIS urls
+    # Define APIs urls
     BingImageAPI.BING_API = config["apis-urls"]["BING_API"]
     TTSConfig.TTS_API = config["apis-urls"]["TTS_API"]
-    OxfordAPI.OXFORD_API = config["apis-urls"]["OXFORD_API"]
-    BritannicaAPI.BRITANNICA_API = config["apis-urls"]["BRITANNICA_API"]
     AnkiConnect.ANKI_CONNECT = config["apis-urls"]["ANKI_CONNECT"]
+
+    # Define APIs keys
+    BingImageAPI.BING_KEY = config["apis-keys"]["BING"]
+    TTSConfig.TTS_KEY = config["apis-keys"]["TTS"]
 
     # Start graphic interface
     GraphicInterface.start_main(config)

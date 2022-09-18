@@ -26,19 +26,14 @@ class CardOptions:
 
         layout = [
             [
-                Sg.Push(),
-                Sg.Text("Select a deck and a model", font="Arial 16 bold"),
-                Sg.Push(),
-            ],
-            [
                 Sg.Text("Deck: ", font=ffont),
                 Sg.Push(),
                 Sg.Text("Model: ", font=ffont),
                 Sg.Push(),
             ],
             [
-                Sg.Listbox(decks, key="deck", size=(30, 5)),
-                Sg.Listbox(models, key="model", size=(30, 5)),
+                Sg.Listbox(decks, key="deck", size=(30, 5), font="Arial 12"),
+                Sg.Listbox(models, key="model", size=(30, 5), font="Arial 12"),
             ],
             [
                 Sg.Push(),
@@ -90,7 +85,12 @@ class CardOptions:
             layout.append([Sg.Text(f"{field}:", font=ffont)])
             layout.append(
                 [
-                    Sg.Multiline(config["fields"][field], size=(50, 8), key=field),
+                    Sg.Multiline(
+                        config["fields"][field],
+                        size=(50, 8),
+                        key=field,
+                        font="Arial 12",
+                    ),
                 ]
             )
 

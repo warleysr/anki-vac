@@ -4,11 +4,13 @@ import json
 import requests
 import threading
 import uuid
+import os
 
 
 class TTSConfig:
 
     TTS_API = None
+    TTS_KEY = None
 
     window = None
     test_text = "\u25b6 Test voice"
@@ -63,8 +65,14 @@ class TTSConfig:
             ],
             [
                 Sg.Push(),
-                Sg.Button(cls.test_text, button_color="green", key="test"),
-                Sg.Button("Save TTS config", key="save"),
+                Sg.Button(
+                    cls.test_text,
+                    font=font,
+                    button_color="green",
+                    disabled_button_color=("white", None),
+                    key="test",
+                ),
+                Sg.Button("Save TTS config", font=font, key="save"),
                 Sg.Push(),
             ],
         ]
@@ -142,19 +150,20 @@ class TTSConfig:
         if play:
             cls.window["test"].update(text="Playing...", disabled=True)
 
-        with open("api_keys.json", "r") as fp:
-            keys = json.load(fp)
+        ssml = (
+            "<speak version='1.0' xml:lang='en-US'>"
+            + f"<voice name='{voice_code}' style='{style}'>"
+            + f"{text}</voice></speak>"
+        )
 
         req = requests.post(
             cls.TTS_API,
             headers={
                 "Content-Type": "application/ssml+xml",
                 "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
-                "Ocp-Apim-Subscription-Key": keys["Azure"]["tts"],
+                "Ocp-Apim-Subscription-Key": cls.TTS_KEY,
             },
-            data="<speak version='1.0' xml:lang='en-US'>"
-            + f"<voice name='{voice_code}' style='{style}'>"
-            + f"{text}</voice></speak>",
+            data=ssml.encode("utf-8"),
         )
 
         name = "tts/" + str(uuid.uuid4()) + ".mp3"
@@ -163,6 +172,7 @@ class TTSConfig:
 
         if play:
             playsound(name)
+            os.remove(name)
             cls.window["test"].update(text=cls.test_text, disabled=False)
 
         return name

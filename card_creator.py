@@ -1,45 +1,34 @@
-from data_apis import *
+from bing_api import *
 from anki_connect import AnkiConnect
 from tts.tts_config import TTSConfig
 from random import choice
 import os
+from wiktionaryparser import WiktionaryParser
 
 
 class CardCreator:
+
+    parser = WiktionaryParser()
+
     @classmethod
     def create_card(cls, config, word):
         deck = config["deck"]
         model = config["model"]
         data = {"fields": {}}
-        phrases = []
-        meanings = []
 
-        ox_def = OxfordAPI.get_definition(word)
-        bt_def = BritannicaAPI.get_definition(word)
-
-        if "results" in ox_def:
-            lex = ox_def["results"][0]["lexicalEntries"][0]
-
-            if "phrases" in lex:
-                phrases.extend([ph["text"] for ph in lex["phrases"]])
-
-            meaning = lex["entries"][0]["senses"][0]
-            if "shortDefinitions" in meaning:
-                meanings.extend([mn for mn in meaning["shortDefinitions"]])
-            else:
-                cross = meaning["crossReferences"][0]
-                meanings.extend([cross["type"] + " " + cross["id"]])
-
-        if "dros" in (entry := bt_def[0]):
-            phrases.extend([ph["drp"] for ph in entry["dros"]])
-
-            meanings.extend([mn for mn in entry["shortdef"]])
-
-        if len(phrases) == 0 or len(meanings) == 0:
+        wdef = cls.parser.fetch(word)[0]
+        wdef = wdef["definitions"][0]
+        if len(wdef) == 0:
             return None
 
-        phrase = sorted(phrases, key=len, reverse=True)[0]
-        meaning = sorted(meanings, key=len)[0]
+        meanings = wdef["text"]
+        meaning = meanings[1]  # Main meaning
+        phrases = wdef["examples"]
+
+        if len(phrases) == 0:
+            return None
+
+        phrase = sorted(phrases, key=len)[0]
 
         for field, value in config["fields"].items():
             data["fields"][field] = (

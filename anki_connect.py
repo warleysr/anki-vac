@@ -59,9 +59,6 @@ class AnkiConnect:
                 }
             )
 
-        with open("options.json", "w") as fp:
-            json.dump(opt, fp, indent=4)
-
         return cls.__api_request(opt)
 
     @classmethod
