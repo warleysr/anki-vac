@@ -1,9 +1,6 @@
 import requests
 import json
 
-# import anki_vac as av
-import traceback
-
 
 class AnkiConnect:
 
@@ -26,6 +23,45 @@ class AnkiConnect:
             "version": 6,
             "params": {"modelName": modelname},
         }
+        return cls.__api_request(opt)
+
+    @classmethod
+    def add_note(cls, deck, model, data):
+        opt = {
+            "action": "addNote",
+            "version": 6,
+            "params": {
+                "note": {
+                    "deckName": deck,
+                    "modelName": model,
+                    "fields": data["fields"],
+                    "audio": [],
+                    "picture": [],
+                }
+            },
+        }
+
+        if "audio" in data:
+            opt["params"]["note"]["audio"].append(
+                {
+                    "path": data["audio"]["path"],
+                    "fields": data["audio"]["fields"],
+                    "filename": data["audio"]["filename"],
+                }
+            )
+
+        if "picture" in data:
+            opt["params"]["note"]["picture"].append(
+                {
+                    "url": data["picture"]["url"],
+                    "fields": data["picture"]["fields"],
+                    "filename": data["picture"]["filename"],
+                }
+            )
+
+        with open("options.json", "w") as fp:
+            json.dump(opt, fp, indent=4)
+
         return cls.__api_request(opt)
 
     @classmethod

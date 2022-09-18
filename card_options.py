@@ -1,10 +1,11 @@
 import PySimpleGUI as Sg
 from anki_connect import AnkiConnect
+import json
 
 
 class CardOptions:
     @classmethod
-    def start_window(cls):
+    def start_window(cls, config):
         ffont = "Arial 12 bold"
 
         decks = AnkiConnect.get_decks()
@@ -72,10 +73,10 @@ class CardOptions:
                             font=ffont,
                         )
                     else:
-                        cls.__card_config(window, fields)
+                        cls.__card_config(window, deck, model, fields, config)
 
     @classmethod
-    def __card_config(cls, parent_window, fields):
+    def __card_config(cls, parent_window, deck, model, fields, config):
         ffont = "Arial 12 bold"
         layout = [
             [
@@ -87,7 +88,11 @@ class CardOptions:
 
         for field in fields:
             layout.append([Sg.Text(f"{field}:", font=ffont)])
-            layout.append([Sg.Multiline(size=(50, 8))])
+            layout.append(
+                [
+                    Sg.Multiline(config["fields"][field], size=(50, 8), key=field),
+                ]
+            )
 
         layout.append(
             [
@@ -105,6 +110,16 @@ class CardOptions:
             if event == Sg.WIN_CLOSED:
                 break
             elif event == "save":
+
+                with open("config.json", "w") as fp:
+                    config["deck"] = deck
+                    config["model"] = model
+                    config["fields"] = {}
+                    for field, value in values.items():
+                        config["fields"][field] = value
+
+                    json.dump(config, fp, indent=4)
+
                 window.close()
                 parent_window.close()
                 break

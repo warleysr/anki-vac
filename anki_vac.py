@@ -1,5 +1,5 @@
 from anki_connect import AnkiConnect
-from bing_api import BingImageAPI
+from data_apis import *
 from interface import GraphicInterface
 from tts.tts_config import TTSConfig
 import time
@@ -39,9 +39,13 @@ if __name__ == "__main__":
     with open("config.json", "r", encoding="utf-8") as fp:
         config = json.load(fp)
 
+    API.start()
+
     # Define APIS urls
     BingImageAPI.BING_API = config["apis-urls"]["BING_API"]
     TTSConfig.TTS_API = config["apis-urls"]["TTS_API"]
+    OxfordAPI.OXFORD_API = config["apis-urls"]["OXFORD_API"]
+    BritannicaAPI.BRITANNICA_API = config["apis-urls"]["BRITANNICA_API"]
     AnkiConnect.ANKI_CONNECT = config["apis-urls"]["ANKI_CONNECT"]
 
     # Start graphic interface

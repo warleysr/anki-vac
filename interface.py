@@ -1,4 +1,5 @@
 import PySimpleGUI as Sg
+from card_creator import CardCreator
 from card_options import CardOptions
 from tts.tts_config import TTSConfig
 
@@ -56,16 +57,22 @@ class GraphicInterface:
                 window["words"].update(disabled=True)
                 window["add"].update(disabled=True)
 
-                nwords = len(values["words"].split("\n"))
-                count = 1
+                words = values["words"].split("\n")
+                nwords = len(words)
+                count = 0
+                fails = 0
 
-                while count <= nwords:
+                for i, word in enumerate(words):
                     window["status"].update(
-                        value=f"Processing words... ({count}/{nwords})"
+                        value=f"Processing words... ({i + 1}/{nwords})"
                     )
-                    window["progress"].update(current_count=count, max=nwords)
-                    time.sleep(1)
-                    count += 1
+                    window["progress"].update(current_count=i + 1, max=nwords)
+
+                    cc = CardCreator.create_card(config, word)
+                    if cc is None:
+                        fails += 1
+                    else:
+                        count += 1
 
                 window["status"].update(value="Finished")
                 window["words"].update(value="")
@@ -73,10 +80,10 @@ class GraphicInterface:
                 window["add"].update(disabled=False)
 
                 Sg.PopupOK(
-                    f"{nwords} new flashcards were added to Anki!", title="Anki-VAC"
+                    f"{count} new flashcards were added to Anki!", title="Anki-VAC"
                 )
 
             elif event == "TTS config":
                 TTSConfig.start_window()
             elif event == "Card options":
-                CardOptions.start_window()
+                CardOptions.start_window(config)

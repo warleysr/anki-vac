@@ -166,3 +166,10 @@ class TTSConfig:
             cls.window["test"].update(text=cls.test_text, disabled=False)
 
         return name
+
+    @classmethod
+    def get_voice_code_config(cls):
+        with open("tts/english_voices.json", "r") as fp:
+            data = json.load(fp)
+            config = data["config"]
+        return data["voices"][config["accent"]][config["gender"]][config["voice"]]
