@@ -28,7 +28,13 @@ class CardCreator:
         if len(phrases) == 0:
             return None
 
-        phrase = sorted(phrases, key=len)[0]
+        phrases = sorted(phrases, key=len)
+        if len(phrases) > 1:
+            phrases = phrases[1:]  # Discard shortest phrase
+        if len(phrases) > 3:
+            phrases = phrases[:4]  # Limit options into 3 phrases
+
+        phrase = choice(phrases)
 
         for field, value in config["fields"].items():
             data["fields"][field] = (

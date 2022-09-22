@@ -60,7 +60,7 @@ class GraphicInterface:
                 window["words"].update(disabled=True)
                 window["add"].update(disabled=True)
 
-                words = values["words"].split("\n")
+                words = set(values["words"].split("\n"))
                 nwords = len(words)
                 count = 0
                 fails = 0
