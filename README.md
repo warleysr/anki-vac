@@ -33,8 +33,8 @@ Anki-VAC have a very straightforward graphical interface. You can configure the 
 After configuration, to use the Anki-VAC you need to open your Anki and paste a list of unknown words to you, one per line and then click the button in main window to start the proccess.
 
 ### Images
-<img src="https://i.imgur.com/N1UQDOf.png" width="300px"/><br>
-<img src="https://i.imgur.com/jJ8n4LC.png" width="300px"/><br>
-<img src="https://i.imgur.com/q49PdNv.png" width="250px"/>
+<img src="https://i.imgur.com/N1UQDOf.png" width="400px"/><br>
+<img src="https://i.imgur.com/jJ8n4LC.png" width="400px"/><br>
+<img src="https://i.imgur.com/q49PdNv.png" width="300px"/>
 
 
