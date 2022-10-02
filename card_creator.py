@@ -3,6 +3,7 @@ from anki_connect import AnkiConnect
 from tts.tts_config import TTSConfig
 from random import choice
 import os
+import interface
 from wiktionaryparser import WiktionaryParser
 
 
@@ -16,25 +17,33 @@ class CardCreator:
         model = config["model"]
         data = {"fields": {}}
 
-        wdef = cls.parser.fetch(word)[0]
-        wdef = wdef["definitions"][0]
-        if len(wdef) == 0:
+        wdefs = cls.parser.fetch(word)[0]["definitions"]
+        if len(wdefs) == 0:
             return None
+        wdefs = sorted(wdefs, key=lambda item: item["partOfSpeech"])
+        wdef = wdefs[0]  # First adjectives, then verbs etc
 
         meanings = wdef["text"]
-        meaning = meanings[1]  # Main meaning
+        meaning = ""
+        mns = 1
+
+        # Get all meanings that will fit 100 characters
+        for mn in range(1, len(meanings)):
+            if len(meaning) + len(meanings[mn]) > 100:
+                continue
+            meaning += f"{mns}. {meanings[mn]}<br>"
+            mns += 1
+
         phrases = wdef["examples"]
 
         if len(phrases) == 0:
             return None
 
         phrases = sorted(phrases, key=len)
-        if len(phrases) > 1:
-            phrases = phrases[1:]  # Discard shortest phrase
         if len(phrases) > 3:
-            phrases = phrases[:4]  # Limit options into 3 phrases
+            phrases = phrases[:4]  # Limit options as the 3 shortest phrases
 
-        phrase = choice(phrases)
+        phrase = choice(phrases).replace(word, f"<b>{word}</b>")
 
         for field, value in config["fields"].items():
             data["fields"][field] = (
@@ -75,3 +84,20 @@ class CardCreator:
         os.remove(audio)
 
         return res
+
+    @classmethod
+    def bulk_card_creation(cls, config, words, window):
+        nwords = len(words)
+        count = 0
+        fails = 0
+
+        for i, word in enumerate(words):
+            window.write_event_value("-THREAD-", (i, nwords))
+            cc = CardCreator.create_card(config, word)
+
+            if cc is None:
+                fails += 1
+            else:
+                count += 1
+
+        window.write_event_value("-FINISH-", (count, fails))

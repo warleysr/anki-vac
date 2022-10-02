@@ -5,6 +5,7 @@ from card_creator import CardCreator
 from card_options import CardOptions
 from tts.tts_config import TTSConfig
 import json
+import threading
 
 
 class GraphicInterface:
@@ -61,30 +62,15 @@ class GraphicInterface:
                 window["add"].update(disabled=True)
 
                 words = set(values["words"].split("\n"))
-                nwords = len(words)
-                count = 0
-                fails = 0
-
-                for i, word in enumerate(words):
-                    window["status"].update(
-                        value=f"Processing words... ({i + 1}/{nwords})"
-                    )
-                    window["progress"].update(current_count=i + 1, max=nwords)
-
-                    cc = CardCreator.create_card(config, word)
-                    if cc is None:
-                        fails += 1
-                    else:
-                        count += 1
-
-                window["status"].update(value="Finished")
-                window["words"].update(value="")
-                window["words"].update(disabled=False)
-                window["add"].update(disabled=False)
-
-                Sg.PopupOK(
-                    f"{count} new flashcards were added to Anki!", title="Anki-VAC"
-                )
+                threading.Thread(
+                    target=CardCreator.bulk_card_creation,
+                    args=(
+                        config,
+                        words,
+                        window,
+                    ),
+                    daemon=True,
+                ).start()
 
             elif event == "Card options":
                 CardOptions.start_window(config)
@@ -92,6 +78,17 @@ class GraphicInterface:
                 TTSConfig.start_window()
             elif event == "APIs config":
                 cls.start_apis_config_window(config)
+            elif event == "-THREAD-":
+                i = values["-THREAD-"][0]
+                nwords = values["-THREAD-"][1]
+
+                window["status"].update(value=f"Processing words... ({i + 1}/{nwords})")
+                window["progress"].update(current_count=i + 1, max=nwords)
+            elif event == "-FINISH-":
+                count = values["-FINISH-"][0]
+                fails = values["-FINISH-"][1]
+
+                cls.finish_popup(window, count, fails)
 
     @classmethod
     def start_apis_config_window(cls, config):
@@ -157,3 +154,16 @@ class GraphicInterface:
 
                 window.close()
                 break
+
+    @classmethod
+    def finish_popup(cls, window, count, fails):
+        window["status"].update(value="Finished")
+        window["words"].update(value="")
+        window["words"].update(disabled=False)
+        window["add"].update(disabled=False)
+
+        Sg.PopupOK(
+            f"{count} new flashcards were added to Anki!"
+            + f" {fails} failed. See log.txt for details.",
+            title="Anki-VAC",
+        )
