@@ -3,7 +3,6 @@ from anki_connect import AnkiConnect
 from tts.tts_config import TTSConfig
 from random import choice
 import os
-import interface
 from wiktionaryparser import WiktionaryParser
 
 
@@ -20,21 +19,38 @@ class CardCreator:
         wdefs = cls.parser.fetch(word)[0]["definitions"]
         if len(wdefs) == 0:
             return None
-        wdefs = sorted(wdefs, key=lambda item: item["partOfSpeech"])
-        wdef = wdefs[0]  # First adjectives, then verbs etc
 
-        meanings = wdef["text"]
+        # First adjectives, then verbs etc
+        wdefs = sorted(wdefs, key=lambda item: item["partOfSpeech"])
+        deflists = []
+        meanings = []
+
+        for defs in wdefs:
+            deflists.append(defs["text"])
+
+        # Organizing definitions based on sorted ones
+        # Mix one adjective with a verbe etc
+        for i in range(1, len(deflists[0])):
+            for j in range(len(deflists)):
+                if i > (len(deflists[j]) - 1):
+                    continue
+                meanings.append(
+                    deflists[j][i]
+                    if len(deflists[j][i]) <= 244
+                    else deflists[j][i][:244]
+                )
+
         meaning = ""
         mns = 1
 
-        # Get all meanings that will fit 100 characters
-        for mn in range(1, len(meanings)):
-            if len(meaning) + len(meanings[mn]) > 100:
+        # Get all meanings that will fit 244 characters (max a tweet length)
+        for meani in meanings:
+            if len(meaning) + len(meani) > 244:
                 continue
-            meaning += f"{mns}. {meanings[mn]}<br>"
+            meaning += f"{mns}. {meani}<br>"
             mns += 1
 
-        phrases = wdef["examples"]
+        phrases = wdefs[0]["examples"]
 
         if len(phrases) == 0:
             return None
@@ -64,6 +80,7 @@ class CardCreator:
                     data["picture"] = {"fields": []}
                 data["picture"]["fields"].append(field)
 
+        audio = None
         if "audio" in data:
             audio = os.path.abspath(
                 TTSConfig.gen_tts_audio(TTSConfig.get_voice_code_config(), phrase)
@@ -71,17 +88,36 @@ class CardCreator:
             data["audio"]["path"] = audio
             data["audio"]["filename"] = f"{word}.wav"
 
-        if "picture" in data and len(meanings) >= 2:
+        img_path = None
+        if "picture" in data:
             links = BingImageAPI.get_image_links(word)
-            url = choice(links)
-            data["picture"]["url"] = url
-            data["picture"]["filename"] = f"{word}.png"
+
+            for url in links:
+                req = requests.get(url)
+                if req.status_code != 200:
+                    continue
+
+                with open(f"{word}.png", "wb+") as fp:
+                    fp.write(req.content)
+
+                img_path = os.path.abspath(f"{word}.png")
+                break
+
+            if img_path is None:
+                del data["picture"]
+            else:
+                data["picture"]["path"] = img_path
+                data["picture"]["filename"] = f"{word}.png"
         else:
             del data["picture"]
 
         res = AnkiConnect.add_note(deck, model, data)
 
-        os.remove(audio)
+        # Remove generate files
+        if audio is not None:
+            os.remove(audio)
+        if img_path is not None:
+            os.remove(img_path)
 
         return res
 

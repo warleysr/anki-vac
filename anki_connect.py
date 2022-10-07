@@ -30,6 +30,15 @@ class AnkiConnect:
         opt = {
             "action": "addNote",
             "version": 6,
+            "options": {
+                "allowDuplicate": False,
+                "duplicateScope": "deck",
+                "duplicateScopeOptions": {
+                    "deckName": deck,
+                    "checkChildren": False,
+                    "checkAllModels": False,
+                },
+            },
             "params": {
                 "note": {
                     "deckName": deck,
@@ -53,7 +62,7 @@ class AnkiConnect:
         if "picture" in data:
             opt["params"]["note"]["picture"].append(
                 {
-                    "url": data["picture"]["url"],
+                    "path": data["picture"]["path"],
                     "fields": data["picture"]["fields"],
                     "filename": data["picture"]["filename"],
                 }
