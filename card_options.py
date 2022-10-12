@@ -86,7 +86,7 @@ class CardOptions:
             layout.append(
                 [
                     Sg.Multiline(
-                        config["fields"][field],
+                        config["fields"][field] if field in config["fields"] else "",
                         size=(50, 8),
                         key=field,
                         font="Arial 12",

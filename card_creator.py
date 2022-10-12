@@ -12,6 +12,10 @@ class CardCreator:
 
     @classmethod
     def create_card(cls, config, word):
+        """
+        This function creates a new Anki flashcard using the configured format and the unknown word.
+        All data is collected using the APIs. Anki needs to be running and AnkiConnect installed.
+        """
         deck = config["deck"]
         model = config["model"]
         data = {"fields": {}}
@@ -43,30 +47,60 @@ class CardCreator:
         meaning = ""
         mns = 1
 
-        # Get all meanings that will fit 244 characters (max a tweet length)
         for meani in meanings:
+            # Ignore just past tense definitions
+            if "simple past" or "past participle" in meani:
+                continue
+
+            # Get all meanings that will fit 244 characters (max a tweet length)
             if len(meaning) + len(meani) > 244:
                 continue
+
             meaning += f"{mns}. {meani}<br>"
             mns += 1
+
+        # Check if any suitable meaning was found
+        if mns == 1:
+            return None
 
         phrases = wdefs[0]["examples"]
 
         if len(phrases) == 0:
             return None
 
+        # Remove synonyms
+        phrases = [ph for ph in phrases if "Synonym" not in ph]
+
         phrases = sorted(phrases, key=len)
         if len(phrases) > 3:
-            phrases = phrases[:4]  # Limit options as the 3 shortest phrases
+            phrases = phrases[:4]  # Limit options as the 4 shortest phrases
 
-        phrase = choice(phrases).replace(word, f"<b>{word}</b>")
+        phrase = choice(phrases)
+
+        # Limit phrase in one sentence
+        def one_sentence():
+            delimiters = ("/", ".", "!", "?")
+            for deli in delimiters:
+                # Try each delimiter and check if it exists in the phrase
+                phr = phrase.split(deli)
+                if len(phr) < 2:
+                    continue
+
+                # Return the part that contains the unknown word
+                for part in phr:
+                    if word in part:
+                        return part.strip()
+
+            return phrase
+
+        phrase = one_sentence()
 
         for field, value in config["fields"].items():
             data["fields"][field] = (
                 value.replace("[AUDIO]", "")
                 .replace("[PICTURE]", "")
                 .replace("[WORD]", word)
-                .replace("[PHRASE]", phrase)
+                .replace("[PHRASE]", phrase.replace(word, f"<b>{word}</b>"))
                 .replace("[MEANING]", meaning)
             )
 
