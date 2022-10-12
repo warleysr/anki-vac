@@ -49,7 +49,7 @@ class CardCreator:
 
         for meani in meanings:
             # Ignore just past tense definitions
-            if "simple past" or "past participle" in meani:
+            if "simple past" in meani or "past participle" in meani:
                 continue
 
             # Get all meanings that will fit 244 characters (max a tweet length)
