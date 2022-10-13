@@ -26,10 +26,13 @@ class CardCreator:
 
         # First adjectives, then verbs etc
         wdefs = sorted(wdefs, key=lambda item: item["partOfSpeech"])
+        is_noun = False
         deflists = []
         meanings = []
 
         for defs in wdefs:
+            if defs["partOfSpeech"] == "noun":
+                is_noun = True
             deflists.append(defs["text"])
 
         # Organizing definitions based on sorted ones
@@ -65,11 +68,11 @@ class CardCreator:
 
         phrases = wdefs[0]["examples"]
 
+        # Remove synonyms phrases
+        phrases = [ph for ph in phrases if "Synonym" not in ph]
+
         if len(phrases) == 0:
             return None
-
-        # Remove synonyms
-        phrases = [ph for ph in phrases if "Synonym" not in ph]
 
         phrases = sorted(phrases, key=len)
         if len(phrases) > 3:
@@ -123,7 +126,7 @@ class CardCreator:
             data["audio"]["filename"] = f"{word}.wav"
 
         img_path = None
-        if "picture" in data:
+        if "picture" in data and is_noun:
             links = BingImageAPI.get_image_links(word)
 
             for url in links:
