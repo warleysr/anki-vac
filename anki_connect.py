@@ -1,5 +1,6 @@
 import requests
 import json
+import traceback
 
 
 class AnkiConnect:
@@ -76,5 +77,5 @@ class AnkiConnect:
             res = requests.get(cls.ANKI_CONNECT, data=json.dumps(opt)).json()
             return None if res["error"] is not None else res["result"]
         except Exception as e:
-            pass
-            # av.Logger.log(traceback.format_exc(), av.Logger.LogType.ERROR)
+            import anki_vac as av
+            av.Logger.log(traceback.format_exc(), av.Logger.LogType.ERROR)
